@@ -1,5 +1,8 @@
 from setuptools import setup
 
+version = __import__("apple_wallet_generator").__version__
+
+
 setup(
     name="apple-wallet-generator",
     version="1.0.3",
