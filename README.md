@@ -10,21 +10,51 @@ See the [Wallet Topic Page](https://developer.apple.com/wallet/) and the
 
 > If you need the server side implementation (API / WebServices) in django you should check http://github.com/devartis/django-passbook.
 
+## How to install this library
+
+```
+$ pip install git+https://github.com/littlebillapp/apple-wallet-generator.git
+```
+
 
 ## Getting Started
 
-1) Get a Pass Type Id
+1) Create a virtual environment
+```shell
+    $ python3 -m venv venv
+    $ source venv/bin/activate
+```
+
+2) Install the dependencies
+```shell
+    $ pip install -r requirements.txt
+```
+
+
+**Troubleshooting**
+
+If you have issues with `fatal error: 'openssl/opensslv.h' file not found` with the installation of the library, you can try to install the dependencies manually.
+
+Mac OS X
+
+```
+$ brew install openssl@3 rust
+$ env OPENSSL_DIR="$(brew --prefix openssl@3)" pip install cryptography
+```
+
+3) Get a Pass Type Id
 
 * Visit the iOS Provisioning Portal -> Pass Type IDs -> New Pass Type ID
 * Select pass type id -> Configure (Follow steps and download generated pass.cer file)
 * Use Keychain tool to export a Certificates.p12 file (need Apple Root Certificate installed)
 
-2) Generate the necessary certificate
+4) Generate the necessary certificate
 
 ```shell
     $ openssl pkcs12 -in "Certificates.p12" -clcerts -nokeys -out certificate.pem   
 ```
-3) Generate the key.pem
+
+5) Generate the key.pem
 
 ```shell
     $ openssl pkcs12 -in "Certificates.p12" -nocerts -out private.key
@@ -32,8 +62,9 @@ See the [Wallet Topic Page](https://developer.apple.com/wallet/) and the
 
 You will be asked for an export password (or export phrase). In this example it will be `123456`, the script will use this as an argument to output the desired `.pkpass`
 
-4) Ensure you have M2Crypto installed
+6) Ensure you have M2Crypto installed
 
+```shell
     sudo easy_install M2Crypto
 
 ## Typical Usage
