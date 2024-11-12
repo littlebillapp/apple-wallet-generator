@@ -177,16 +177,16 @@ class IBeacon(BaseModel):
 
 
 class PassInformation(BaseModel):
+    jsonname: str | None = None
+
+    headerFields: list[Field] = []
+    primaryFields: list[Field] = []
+    secondaryFields: list[Field] = []
+    backFields: list[Field] = []
+    auxiliaryFields: list[Field] = []
 
     class Config:
         arbitrary_types_allowed = True
-
-    def __init__(self):
-        self.headerFields = []
-        self.primaryFields = []
-        self.secondaryFields = []
-        self.backFields = []
-        self.auxiliaryFields = []
 
     def addHeaderField(self, key, value, label):
         self.headerFields.append(Field(key, value, label))
@@ -253,10 +253,7 @@ class Generic(PassInformation):
 
 
 class StoreCard(PassInformation):
-
-    def __init__(self):
-        super().__init__()
-        self.jsonname = "storeCard"
+    jsonname = "storeCard"
 
 
 class Pass(BaseModel):
@@ -264,17 +261,9 @@ class Pass(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    passInformation: PassInformation
-    barcode: Barcode | None = None
-    barcodes: list[Barcode] | None = None
-    backgroundColor: str | None = None
-    foregroundColor: str | None = None
-    labelColor: str | None = None
-    logoText: str | None = None
-
     def __init__(
         self,
-        passInformation,
+        passInformation: PassInformation,
         json="",
         passTypeIdentifier="",
         organizationName="",
