@@ -8,6 +8,7 @@ from io import BytesIO
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.serialization import pkcs7
+from pydantic import BaseModel
 
 
 class Alignment:
@@ -249,7 +250,15 @@ class StoreCard(PassInformation):
         self.jsonname = "storeCard"
 
 
-class Pass(object):
+class Pass(BaseModel):
+
+    passInformation: PassInformation
+    barcode: Barcode | None = None
+    barcodes: list[Barcode] | None = None
+    backgroundColor: str | None = None
+    foregroundColor: str | None = None
+    labelColor: str | None = None
+    logoText: str | None = None
 
     def __init__(
         self,
@@ -409,33 +418,33 @@ class Pass(object):
                 legacyBarcode = Barcode(
                     self.barcode.message, BarcodeFormat.PDF417, self.barcode.altText
                 )
-            d.update({"barcodes": newBarcodes})
-            d.update({"barcode": legacyBarcode})
+            d.barcode = legacyBarcode
+            d.barcodes = newBarcodes
 
         if self.relevantDate:
-            d.update({"relevantDate": self.relevantDate})
+            d.relevantDate = self.relevantDate
         if self.backgroundColor:
-            d.update({"backgroundColor": self.backgroundColor})
+            d.backgroundColor = self.backgroundColor
         if self.foregroundColor:
-            d.update({"foregroundColor": self.foregroundColor})
+            d.foregroundColor = self.foregroundColor
         if self.labelColor:
-            d.update({"labelColor": self.labelColor})
+            d.labelColor = self.labelColor
         if self.logoText:
-            d.update({"logoText": self.logoText})
+            d.logoText = self.logoText
         if self.locations:
-            d.update({"locations": self.locations})
+            d.locations = self.locations
         if self.ibeacons:
-            d.update({"beacons": self.ibeacons})
+            d.ibeacons = self.ibeacons
         if self.userInfo:
-            d.update({"userInfo": self.userInfo})
+            d.userInfo = self.userInfo
         if self.associatedStoreIdentifiers:
-            d.update({"associatedStoreIdentifiers": self.associatedStoreIdentifiers})
+            d.associatedStoreIdentifiers = self.associatedStoreIdentifiers
         if self.appLaunchURL:
-            d.update({"appLaunchURL": self.appLaunchURL})
+            d.appLaunchURL = self.appLaunchURL
         if self.expirationDate:
-            d.update({"expirationDate": self.expirationDate})
+            d.expirationDate = self.expirationDate
         if self.voided:
-            d.update({"voided": True})
+            d.voided = True
         if self.webServiceURL:
             d.update(
                 {
@@ -449,9 +458,6 @@ class Pass(object):
 def PassHandler(obj):
     if hasattr(obj, "json_dict"):
         return obj.json_dict()
-    else:
-        # For Decimal latitude and logitude etc.
-        if isinstance(obj, decimal.Decimal):
-            return str(obj)
-        else:
-            return obj
+
+    # For Decimal latitude and logitude etc.
+    return str(obj) if isinstance(obj, decimal.Decimal) else obj
