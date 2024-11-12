@@ -49,7 +49,7 @@ class NumberStyle:
     SPELLOUT = "PKNumberStyleSpellOut"
 
 
-class Field(object):
+class Field(BaseModel):
 
     def __init__(self, key, value, label=""):
 
@@ -107,7 +107,10 @@ class CurrencyField(Field):
         return self.__dict__
 
 
-class Barcode(object):
+class Barcode(BaseModel):
+
+    class Config:
+        arbitrary_types_allowed = True
 
     def __init__(
         self,
@@ -156,7 +159,10 @@ class Location(object):
         return self.__dict__
 
 
-class IBeacon(object):
+class IBeacon(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
     def __init__(self, proximityuuid, major, minor):
         # IBeacon data
         self.proximityUUID = proximityuuid
@@ -170,7 +176,10 @@ class IBeacon(object):
         return self.__dict__
 
 
-class PassInformation(object):
+class PassInformation(BaseModel):
+
+    class Config:
+        arbitrary_types_allowed = True
 
     def __init__(self):
         self.headerFields = []
@@ -251,6 +260,9 @@ class StoreCard(PassInformation):
 
 
 class Pass(BaseModel):
+
+    class Config:
+        arbitrary_types_allowed = True
 
     passInformation: PassInformation
     barcode: Barcode | None = None
