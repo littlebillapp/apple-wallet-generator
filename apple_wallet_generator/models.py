@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import decimal
+from enum import Enum
 import hashlib
 import json
 import zipfile
@@ -11,7 +12,7 @@ from cryptography.hazmat.primitives.serialization import pkcs7
 from pydantic import BaseModel
 
 
-class Alignment:
+class Alignment(str, Enum):
     LEFT = "PKTextAlignmentLeft"
     CENTER = "PKTextAlignmentCenter"
     RIGHT = "PKTextAlignmentRight"
@@ -50,14 +51,21 @@ class NumberStyle:
 
 
 class Field(BaseModel):
+    # Required. The key must be unique within the scope
+    key: str
+    # Required. Value of the field. For example, 42
+    value: str
+    # Optional. Label text for the field.
+    label: str | None = ""
+    # Optional. Format string for the alert text that is displayed when the pass is updated
+    changeMessage: str | None = None
+    # Optional. Text alignment of the field.
+    textAlignment: Alignment = Alignment.LEFT
 
-    def __init__(self, key, value, label=""):
-
-        self.key = key  # Required. The key must be unique within the scope
-        self.value = value  # Required. Value of the field. For example, 42
-        self.label = label  # Optional. Label text for the field.
-        self.changeMessage = ""  # Optional. Format string for the alert text that is displayed when the pass is updated
-        self.textAlignment = Alignment.LEFT
+    def __init__(self, key: str, value: str, label: str | None):
+        self.key = key
+        self.value = value
+        self.label = label
 
     def json_dict(self):
         return self.__dict__
@@ -191,8 +199,9 @@ class PassInformation(BaseModel):
     def addHeaderField(self, key, value, label):
         self.headerFields.append(Field(key, value, label))
 
-    def addPrimaryField(self, key, value, label):
-        self.primaryFields.append(Field(key, value, label))
+    def addPrimaryField(self, key: str, value: str, label: str | None = None):
+        field = Field(key, value, label)
+        self.primaryFields.append(field)
 
     def addSecondaryField(self, key, value, label):
         self.secondaryFields.append(Field(key, value, label))
