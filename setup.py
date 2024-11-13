@@ -5,7 +5,7 @@ version = __import__("apple_wallet_generator").__version__
 
 setup(
     name="apple-wallet-generator",
-    version="1.0.3",
+    version="1.0.4",
     description="A tool to generate Apple Wallet passes",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
