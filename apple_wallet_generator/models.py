@@ -50,7 +50,7 @@ class NumberStyle:
     SPELLOUT = "PKNumberStyleSpellOut"
 
 
-class Field(BaseModel):
+class BaseField(BaseModel):
     # Required. The key must be unique within the scope
     key: str
     # Required. Value of the field. For example, 42
@@ -62,16 +62,11 @@ class Field(BaseModel):
     # Optional. Text alignment of the field.
     textAlignment: Alignment = Alignment.LEFT
 
-    def __init__(self, key: str, value: str, label: str | None):
-        self.key = key
-        self.value = value
-        self.label = label
-
     def json_dict(self):
         return self.__dict__
 
 
-class DateField(Field):
+class DateField(BaseField):
 
     def __init__(
         self,
@@ -95,7 +90,7 @@ class DateField(Field):
         return self.__dict__
 
 
-class NumberField(Field):
+class NumberField(BaseField):
 
     def __init__(self, key, value, label=""):
         super().__init__(key, value, label)
@@ -105,7 +100,7 @@ class NumberField(Field):
         return self.__dict__
 
 
-class CurrencyField(Field):
+class CurrencyField(BaseField):
 
     def __init__(self, key, value, label="", currencyCode=""):
         super().__init__(key, value, label)
@@ -187,30 +182,34 @@ class IBeacon(BaseModel):
 class PassInformation(BaseModel):
     jsonname: str | None = None
 
-    headerFields: list[Field] = []
-    primaryFields: list[Field] = []
-    secondaryFields: list[Field] = []
-    backFields: list[Field] = []
-    auxiliaryFields: list[Field] = []
+    headerFields: list[BaseField] = []
+    primaryFields: list[BaseField] = []
+    secondaryFields: list[BaseField] = []
+    backFields: list[BaseField] = []
+    auxiliaryFields: list[BaseField] = []
 
     class Config:
         arbitrary_types_allowed = True
 
-    def addHeaderField(self, key, value, label):
-        self.headerFields.append(Field(key, value, label))
+    def addHeaderField(self, key: str, value: str, label: str | None = None):
+        field = BaseField(key=key, value=value, label=label)
+        self.headerFields.append(field)
 
     def addPrimaryField(self, key: str, value: str, label: str | None = None):
-        field = Field(key, value, label)
+        field = BaseField(key=key, value=value, label=label)
         self.primaryFields.append(field)
 
-    def addSecondaryField(self, key, value, label):
-        self.secondaryFields.append(Field(key, value, label))
+    def addSecondaryField(self, key: str, value: str, label: str | None = None):
+        field = BaseField(key=key, value=value, label=label)
+        self.secondaryFields.append(field)
 
-    def addBackField(self, key, value, label):
-        self.backFields.append(Field(key, value, label))
+    def addBackField(self, key: str, value: str, label: str | None = None):
+        field = BaseField(key=key, value=value, label=label)
+        self.backFields.append(field)
 
-    def addAuxiliaryField(self, key, value, label):
-        self.auxiliaryFields.append(Field(key, value, label))
+    def addAuxiliaryField(self, key: str, value: str, label: str | None = None):
+        field = BaseField(key=key, value=value, label=label)
+        self.auxiliaryFields.append(field)
 
     def json_dict(self):
         d = {}
