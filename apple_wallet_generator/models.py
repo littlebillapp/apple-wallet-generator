@@ -266,78 +266,71 @@ class StoreCard(PassInformation):
 
 class Pass(BaseModel):
 
+    _files: dict[str, bytes] = {}
+    _hashes: dict[str, str] = {}
+
+    # Standard Keys
+
+    # Required. Team identifier of the organization that originated and
+    # signed the pass, as issued by Apple.
+    teamIdentifier: str
+    # Required. Pass type identifier, as issued by Apple. The value must
+    # correspond with your signing certificate. Used for grouping.
+    passTypeIdentifier: str
+    # Required. Display name of the organization that originated and
+    # signed the pass.
+    organizationName: str
+    # Required. Serial number that uniquely identifies the pass.
+    serialNumber: str
+    # Required. Brief description of the pass, used by the iOS
+    # accessibility technologies.
+    description: str
+    # Required. Version of the file format. The value must be 1.
+    formatVersion: int = 1
+
+    # Visual Appearance Keys
+    backgroundColor: str | None = None  # Optional. Background color of the pass
+    foregroundColor: str | None = None  # Optional. Foreground color of the pass,
+    labelColor: str | None = None  # Optional. Color of the label text
+    logoText: str | None = None  # Optional. Text displayed next to the logo
+    barcode: Barcode | None = (
+        None  # Optional. Information specific to barcodes.  This is deprecated and can only be set to original barcode formats.
+    )
+    barcodes: list[Barcode] | None = None  # Optional.  All supported barcodes
+    # Optional. If true, the strip image is displayed
+    suppressStripShine: bool = False
+
+    # Web Service Keys
+
+    # Optional. If present, authenticationToken must be supplied
+    webServiceURL: str | None = None
+    # The authentication token to use with the web service
+    authenticationToken: str | None = None
+
+    # Relevance Keys
+
+    # Optional. Locations where the pass is relevant.
+    # For example, the location of your store.
+    locations = None
+    # Optional. IBeacons data
+    ibeacons: list[IBeacon] | None = None
+    # Optional. Date and time when the pass becomes relevant
+    relevantDate = None
+
+    # Optional. A list of iTunes Store item identifiers for
+    # the associated apps.
+    associatedStoreIdentifiers = None
+    appLaunchURL = None
+    # Optional. Additional hidden data in json for the passbook
+    userInfo = None
+
+    expirationDate = None
+    voided = None
+
+    passInformation: PassInformation
+
     class Config:
         arbitrary_types_allowed = True
-
-    def __init__(
-        self,
-        passInformation: PassInformation,
-        json="",
-        passTypeIdentifier="",
-        organizationName="",
-        teamIdentifier="",
-    ):
-
-        self._files = {}  # Holds the files to include in the .pkpass
-        self._hashes = {}  # Holds the SHAs of the files array
-
-        # Standard Keys
-
-        # Required. Team identifier of the organization that originated and
-        # signed the pass, as issued by Apple.
-        self.teamIdentifier = teamIdentifier
-        # Required. Pass type identifier, as issued by Apple. The value must
-        # correspond with your signing certificate. Used for grouping.
-        self.passTypeIdentifier = passTypeIdentifier
-        # Required. Display name of the organization that originated and
-        # signed the pass.
-        self.organizationName = organizationName
-        # Required. Serial number that uniquely identifies the pass.
-        self.serialNumber = ""
-        # Required. Brief description of the pass, used by the iOS
-        # accessibility technologies.
-        self.description = ""
-        # Required. Version of the file format. The value must be 1.
-        self.formatVersion = 1
-
-        # Visual Appearance Keys
-        self.backgroundColor = None  # Optional. Background color of the pass
-        self.foregroundColor = None  # Optional. Foreground color of the pass,
-        self.labelColor = None  # Optional. Color of the label text
-        self.logoText = None  # Optional. Text displayed next to the logo
-        self.barcode = None  # Optional. Information specific to barcodes.  This is deprecated and can only be set to original barcode formats.
-        self.barcodes = None  # Optional.  All supported barcodes
-        # Optional. If true, the strip image is displayed
-        self.suppressStripShine = False
-
-        # Web Service Keys
-
-        # Optional. If present, authenticationToken must be supplied
-        self.webServiceURL = None
-        # The authentication token to use with the web service
-        self.authenticationToken = None
-
-        # Relevance Keys
-
-        # Optional. Locations where the pass is relevant.
-        # For example, the location of your store.
-        self.locations = None
-        # Optional. IBeacons data
-        self.ibeacons = None
-        # Optional. Date and time when the pass becomes relevant
-        self.relevantDate = None
-
-        # Optional. A list of iTunes Store item identifiers for
-        # the associated apps.
-        self.associatedStoreIdentifiers = None
-        self.appLaunchURL = None
-        # Optional. Additional hidden data in json for the passbook
-        self.userInfo = None
-
-        self.expirationDate = None
-        self.voided = None
-
-        self.passInformation = passInformation
 
     # Adds file to the file array
     def addFile(self, name, fd):
